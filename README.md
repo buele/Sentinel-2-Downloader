@@ -45,11 +45,6 @@ docker-compose build
 ```
 
 
-
-## Create database
-
-
-curl -X GET localhost:5000/products/pending
 # How to run
  1. Launch the dockers
 ```
@@ -188,17 +183,6 @@ The possible configurations to filter the list of products are:
 ### Sequence diagram
 
 ![](https://raw.githubusercontent.com/SardegnaClimaOnlus/ichnosat/master/auto-docs/source/_static/downloader-sequence-diagram.png)
-
-
-
-
-## System Manager
-
-System Manager is the high level module to manage other modules.
-
-### Class diagram
-
-![](https://raw.githubusercontent.com/SardegnaClimaOnlus/ichnosat/master/auto-docs/source/_static/system_manager-class-diagram.png)
 
 
 
