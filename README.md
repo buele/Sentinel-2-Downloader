@@ -29,9 +29,6 @@ fully customized in terms of AOI (Area of Interest) and Products Sensing Time.
 
 
 
-
-
-
 - Cross-platform support
     - Ichnosat Platform provides the Docker containers
 
@@ -44,6 +41,132 @@ fully customized in terms of AOI (Area of Interest) and Products Sensing Time.
         - Number of parallel downloads at the same time
 
 
+# How to build
+
+```
+cd <project_path>
+docker-compose build
+```
+
+
+
+## Create database
+
+
+curl -X GET localhost:5000/products/pending
+# How to run
+ 1. Launch the dockers
+```
+docker-compose up
+```
+
+ 2. Create database (only first execution)
+
+Calling the api to create the database via http request:
+```
+curl -i -H "Accept: application/json" -H "Content-Type: application/json" -X GET localhost:5000/create-database
+```
+
+ 3. Launch the downloader
+
+```
+curl -i -H "Accept: appliccurl -i -H "Accept: application/json" -H "Content-Type: application/json" -X GET localhost:5000/start-downloader
+```
+
+ 4. Get list of downloading products
+
+```
+curl -i -H "Accept: appliccurl -i -H "Accept: application/json" -H "Content-Type: application/json" -X GET localhost:5000/products/downloading
+```
+
+ 5. Get list of pending products
+
+```
+curl -i -H "Accept: appliccurl -i -H "Accept: application/json" -H "Content-Type: application/json" -X GET localhost:5000/products/pending
+```
+
+
+# How to stop
+```
+docker-compose down
+```
+
+# Customizations
+
+## Set Tiles to download
+
+1. Edit the *Downloader* configuration file
+
+```
+
+   vim /usr/downloader/src/core/config/config.cfg
+```
+
+2. Set the list of tiles using the comma ',' as separator, in the 'tiles' key; e.g.:
+
+```
+   tiles=32/T/ML,32/T/NL,32/T/MK,32/T/NK,32/S/MJ,32/S/NJ
+```
+
+
+## Set files to download for each tile
+
+1. Edit the *Downloader* configuration file
+
+```
+   vim /usr/downloader/src/core/config/config.cfg
+```
+2. Set the list of tiles using the comma ',' as separator, in the 'files_to_download' key; e.g.:
+
+
+```
+   files_to_download=B04.jp2,B08.jp2
+```
+
+## Set Sensing time interval
+
+You can filter the products to download, setting the sensing time interval.
+The interval is composed of *start* date and *end* date.
+
+1. Edit the *Downloader* configuration file
+
+```
+   vim /usr/downloader/src/core/config/config.cfg
+```
+
+2. Set the sensing time **start**, in the 'start_date' key; e.g.:
+
+
+```
+   start_date=2016/07/13
+```
+
+3. Set the sensing time **end**, in the 'end_date' key; e.g.:
+
+```
+   end_date=2017/07/13
+```
+
+
+It is possible to set *NOW* as sensing time *end*, this means that the *Downloader* for every download cycle consider as sensing time *end* the current date; e.g.:
+
+```
+   end_date=NOW
+```
+
+## Set how many parallels download threads
+
+You can define how many parallels download run in the same time:
+
+1. Edit the *Downloader* configuration file
+
+```
+   vim /usr/downloader/src/core/config/config.cfg
+```
+2. Set how many threads the *Downloader* launches, in the 'parallel_downloads' key; e.g.:
+```
+   parallel_downloads=2
+```
 
 
 # Software architecture
@@ -51,14 +174,6 @@ fully customized in terms of AOI (Area of Interest) and Products Sensing Time.
 
 ## Overview
 
-
-
-
-*Downloader* and *Processor* are the main modules of this platform. The schema with all modules involved follows:
-
-![](https://raw.githubusercontent.com/SardegnaClimaOnlus/ichnosat/master/auto-docs/source/_static/ichnosat-modules.png)
-
-## Downloader
 
 
 This module is deputed to retrieve the list of available products and download them, on the basis of the configurations set by user.
@@ -80,36 +195,6 @@ The possible configurations to filter the list of products are:
 
 
 
-## Processor
-
-The goal of this component is to process downloaded products.
-Every processing algorithm is represented by C++ plugins. This means that *Processor* module is
-extendible. Plugins are dynamic shared library (Linux environment)
-
-The processor runs as http server to receive requests via http:
-
-![](https://raw.githubusercontent.com/SardegnaClimaOnlus/ichnosat/master/auto-docs/source/_static/processor-web-interface.png)
-
-
-When the POST /process http is received the *Processor* starts a processing task, spreading a pool of threads.
-The number of threads is configurable via *conf.cfg* file.
-
-
-If you want to develop a new plugin
-for your processing purposes, please follows the tutorial:
-
-[How to create a new plugin](https://sardegnaclimaonlus.github.io//ichnosat/how_to_create_a_new_plugin.html)
-
-### Class diagram
-
-
-![](https://raw.githubusercontent.com/SardegnaClimaOnlus/ichnosat/master/auto-docs/source/_static/processor-class-diagram.png)
-
-
-### Sequence diagram
-
-![](https://raw.githubusercontent.com/SardegnaClimaOnlus/ichnosat/master/auto-docs/source/_static/processor-sequence-diagram.png)
-
 
 ## System Manager
 
@@ -121,7 +206,6 @@ System Manager is the high level module to manage other modules.
 
 
 
-
 ## Database
 
 Database module contains the classes of ORM.
@@ -129,46 +213,12 @@ In this version (0.1) is used *SqlAlchemy* ORM.
 
 ### Class diagram
 
-![](https://raw.githubusercontent.com/SardegnaClimaOnlus/ichnosat/master/auto-docs/source/_static/database-class-diagram.png)
+![](https://raw.githubusercontent.com/buele/Sentinel-2-Downloader/master/docs/database-class-diagram.png)
 
 
 ### Database schema
 
-![](https://raw.githubusercontent.com/SardegnaClimaOnlus/ichnosat/master/auto-docs/source/_static/database-schema.png)
-
-
-## Folder Structure
-
-
-The description of the main folders in the source code follows:
-
-```
-
-   |-- Dockerfile             # Docker file of ichnosat platform
-   |-- LICENSE.TXT            # MIT license text
-   |-- README.md              # README of the project (for github main page)
-   |-- auto-docs              # Documentation sources and images
-   |-- data_local
-   |   |-- db                 # Postgresql database files (mounted by docker-compose)
-   |   |-- inbox              # Temporary downloaded products by the Downloader
-   |   |-- log                # Ichnosat logs
-   |   |-- outbox             # Processed products folder
-   |   |-- supervisord        # Supervisord log folder
-   |-- docker-compose.yml     # Docker Compose definition file
-   |-- src
-   |   |-- core               # Main Modules source code (Downloader, Processor, System Manager)
-   |   |-- data               # Database and Logger source code
-   |   |-- gui                # Web GUI interface source code
-   |   |-- presentation       # External interface (http) source code
-   |   `-- tests              # Tests
-   `-- vendors                # Third part dependencies
-
-```
-
-## External Inteface APIs
-----------------------
-
-[](https://raw.githubusercontent.com/SardegnaClimaOnlus/ichnosat/master/auto-docs/source/_static/external-interface-apis.png)
+![](https://raw.githubusercontent.com/buele/Sentinel-2-Downloader/master/docs/database-schema.png)
 
 
 
@@ -179,36 +229,19 @@ The description of the main folders in the source code follows:
 - **Docker and docker compose**: virtual image container
 - **SqlAlchemy**: ORM framework for python
 - **Supervisord**: Task manager
-- **Valgrind**: Process monitoring
-- **Sphinx**: Automatic Documentation for python
 - **Flask**: light webserver
-- **Nginx**: web server
 - **Postgresql**: database
-- **GDAL**: C/C++ library for satellite image processing
-- **OpenJPG**: library to manage jpeg2000 images
 - **Python 3.4**
 - **crontab**
 - **debian**
 - **pip**
-- **C++11**
-
-
-
-## Download
-
-[Source Code](https://github.com/SardegnaClimaOnlus/ichnosat/archive/master.zip)
 
 
 
 
 
 
-docker-compose build
-docker-compose up
-docker-compose down
 
 
-## Create database
-curl -i -H "Accept: application/json" -H "Content-Type: application/json" -X GET localhost:5000/create-database
 
-curl -X GET localhost:5000/products/pending
+
