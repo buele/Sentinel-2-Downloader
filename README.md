@@ -28,11 +28,7 @@ the [MIT](https://opensource.org/licenses/MIT) license.
 fully customized in terms of AOI (Area of Interest) and Products Sensing Time.
 
 
-
-- Cross-platform support
-    - Ichnosat Platform provides the Docker containers
-
-- Downloader
+- Main features
     - Get Sentinel-2 data from  [Sentinel-2 on AWS](http://sentinel-pds.s3-website.eu-central-1.amazonaws.com/)
     - Customizable features:
         - Tiles to download (UTM-MGRS Tile-ID)
