@@ -5,7 +5,7 @@ S2-Tick
 Customizable Sentinel-2 products downloader
 -------------------------------------------
 
-<img src="https://raw.githubusercontent.com/buele/Sentinel-2-Downloader/master/logo/s2-tick.png" alt="alt text" width="300" height="300">
+<img src="https://raw.githubusercontent.com/buele/Sentinel-2-Downloader/master/docs/logo/s2-tick.png" alt="alt text" width="300" height="300">
 
 S2-Tick is an automatic and customizable sentinel-2 products downloader.
 
