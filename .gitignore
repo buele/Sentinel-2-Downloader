@@ -1,0 +1,16 @@
+*/**/__pycache__
+*/**/*.log
+.idea
+*/**/*.so
+*/**/*.tif*
+*/**/*.jp2
+**/env
+**/__pycache__
+__pycache__
+*.sqlite
+supervisord.pid
+data/db/data/*
+data/log/valgrind
+auto-docs/**/build
+**/**/*.pyc
+**/**/*.out
